@@ -1,4 +1,4 @@
-import ffi from "ffi-napi";
+import koffi from "koffi";
 import { VKey } from "./vkey";
 
 type IKey = VKey | string;
@@ -12,10 +12,9 @@ interface IShortcut {
 
 let shortcuts: IShortcut[] = [];
 
-const user32 = new ffi.Library("user32.dll", {
-  VkKeyScanA: ["int16", ["char"]],
-  GetAsyncKeyState: ["int16", ["int32"]],
-});
+const lib = koffi.load("user32.dll");
+const VkKeyScanA = lib.func("VkKeyScanA", "int16", ["int8"]);
+const GetAsyncKeyState = lib.func("GetAsyncKeyState", "int16", ["int32"]);
 
 const registerShortcut = (
   shortcut: IKey[],
@@ -26,7 +25,7 @@ const registerShortcut = (
   shortcut.forEach((key) => {
     let keyCode: number;
     if (typeof key == "string") {
-      keyCode = user32.VkKeyScanA(key.charCodeAt(0));
+      keyCode = VkKeyScanA(key.charCodeAt(0));
     } else {
       keyCode = key as VKey as number;
     }
@@ -44,7 +43,7 @@ const hookCallback = () => {
 
     if (keys.length == 0) return false;
     keys.forEach((key) => {
-      if ((user32.GetAsyncKeyState(key) & 0x8000) == 0) {
+      if ((GetAsyncKeyState(key) & 0x8000) == 0) {
         success = false;
       }
     });
@@ -74,7 +73,7 @@ const unregisterShortcut = (shortcut: IKey[], noRepeat: boolean = true) => {
   shortcut.forEach((key) => {
     let keyCode: number;
     if (typeof key == "string") {
-      keyCode = user32.VkKeyScanA(key.charCodeAt(0));
+      keyCode = VkKeyScanA(key.charCodeAt(0));
     } else {
       keyCode = key as VKey as number;
     }
@@ -92,7 +91,7 @@ const unregisterShortcut = (shortcut: IKey[], noRepeat: boolean = true) => {
     return success;
   });
 };
-let hook: NodeJS.Timeout;
+let hook: number;
 const registerHook = (interval: number = 0) => {
   hook = setInterval(hookCallback, interval);
 };
