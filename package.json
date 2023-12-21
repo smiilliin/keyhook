@@ -1,0 +1,31 @@
+{
+  "name": "@smiilliin/keyhook",
+  "version": "1.0.1",
+  "description": "",
+  "main": "dist/main.js",
+  "scripts": {
+    "test": "ts-mocha test/**.spec.ts",
+    "start": "eslint . && ts-node src/main.ts",
+    "build": "eslint . && tsc"
+  },
+  "keywords": [
+    "node",
+    "keyboard",
+    "hooking",
+    "keyboard-hooking"
+  ],
+  "author": "",
+  "license": "ISC",
+  "gypfile": true,
+  "dependencies": {
+    "ffi-napi": "^4.0.3"
+  },
+  "devDependencies": {
+    "@types/ffi-napi": "^4.0.10",
+    "@types/mocha": "^10.0.6",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "eslint": "^8.56.0",
+    "ts-mocha": "^10.0.0"
+  }
+}
